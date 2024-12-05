@@ -1,0 +1,37 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Epilepsy Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Epilepsy Prediction from EEG Data</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form method="post" enctype="multipart/form-data">
+        <label for="file">Upload EEG CSV File:</label>
+        <input type="file" name="file" id="file" accept=".csv" required><br><br>
+
+        <label for="record_time">Record Time (seconds):</label>
+        <input type="number" name="record_time" id="record_time" min="1" required><br><br>
+
+        <label for="eye_on">Eye On Duration (seconds):</label>
+        <input type="number" name="eye_on" id="eye_on" min="0" required><br><br>
+
+        <label for="eye_off">Eye Off Duration (seconds):</label>
+        <input type="number" name="eye_off" id="eye_off" min="0" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+</body>
+</html>

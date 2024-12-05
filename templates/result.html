@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Prediction Result</h1>
+    <p>The model predicts that the person has: <strong>{{ prediction }}</strong></p>
+    <a href="{{ url_for('index') }}">Make another prediction</a>
+</body>
+</html>
