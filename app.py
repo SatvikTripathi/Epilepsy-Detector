@@ -69,14 +69,48 @@ record_time = st.number_input("Record Time (seconds)", min_value=1, step=1)
 eye_on = st.number_input("Eye On Time (seconds)", min_value=0, step=1)
 eye_off = st.number_input("Eye Off Time (seconds)", min_value=0, step=1)
 
+# Function to plot PSD
+def plot_psd(raw_data, channel_names, sfreq=128):
+    """
+    Plot the Power Spectral Density (PSD) of EEG data.
+
+    Parameters:
+    - raw_data: numpy.ndarray of shape (n_channels, n_samples), EEG data.
+    - channel_names: list of str, names of EEG channels.
+    - sfreq: float, sampling frequency of the EEG data.
+    """
+    info = mne.create_info(ch_names=channel_names, sfreq=sfreq, ch_types="eeg")
+    raw = mne.io.RawArray(raw_data, info)
+    raw.set_montage('standard_1020')
+
+    # Plot PSD
+    fig = raw.plot_psd(fmin=0.1, fmax=45, show=False)  # Customize frequency range as needed
+    return fig
+
+# Streamlit prediction logic
 if st.button("Predict"):
     if uploaded_file is not None:
         try:
             filepath = os.path.join("uploads", uploaded_file.name)
             with open(filepath, "wb") as f:
                 f.write(uploaded_file.getbuffer())
+
             prediction = process_and_predict(filepath, record_time, eye_on, eye_off)
+
+            # Display prediction
             st.success(f"Prediction: {prediction}")
+
+            # Create MNE raw object for PSD
+            df = pd.read_csv(filepath).iloc[:, 1:15]  # Select only EEG data columns
+            raw_data = df.to_numpy().T  # Transpose to shape (n_channels, n_samples)
+            channel_names = list(df.columns)
+
+            # Plot and display PSD
+            st.subheader("Power Spectral Density (PSD)")
+            fig_psd = plot_psd(raw_data, channel_names, sfreq=128)
+            st.pyplot(fig_psd)
+
+            # Remove uploaded file
             os.remove(filepath)
         except Exception as e:
             st.error(f"An error occurred: {e}")
